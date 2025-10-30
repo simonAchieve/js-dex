@@ -56,7 +56,7 @@ app.post('/set', async (req, res) => {
   try {
     const { key, value } = req.body;
     
-    if (!key || !value) {
+    if (key === undefined || key === null || value === undefined || value === null) {
       return res.status(400).json({ 
         error: 'Both key and value are required' 
       });
@@ -108,6 +108,10 @@ app.listen(PORT, () => {
 // Graceful shutdown
 process.on('SIGINT', async () => {
   console.log('\nShutting down gracefully...');
-  await redisClient.quit();
+  try {
+    await redisClient.quit();
+  } catch (err) {
+    console.error('Error closing Redis connection:', err);
+  }
   process.exit(0);
 });
